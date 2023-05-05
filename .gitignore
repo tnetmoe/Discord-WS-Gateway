@@ -1,0 +1,14 @@
+# JetBrains
+.idea/deployment.xml
+.idea/workspace.xml
+.idea/httpRequests/*
+
+# Logs
+logs
+*.log
+
+# Dependency directories
+node_modules/
+
+# TypeScript build output
+dist

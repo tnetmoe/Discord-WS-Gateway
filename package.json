@@ -1,0 +1,29 @@
+{
+  "name": "discord-ws-gateway",
+  "version": "1.0.0",
+  "description": "Discord websockets gateway.",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "type": "module",
+  "main": "src/main.ts",
+  "scripts": {
+    "start": "npm run build && node --trace-warnings dist/main.js",
+    "build": "tsc --project tsconfig.json",
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/tnet.moe/discord/discord-ws-gateway.git"
+  },
+  "keywords": [
+    "Discord"
+  ],
+  "author": "Tristan <tristan@tnet.moe>",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://gitlab.com/tnet.moe/discord/discord-ws-gateway/issues"
+  },
+  "homepage": "https://gitlab.com/tnet.moe/discord/discord-ws-gateway#readme"
+}
