@@ -7,9 +7,9 @@
     "node": ">=20.0.0"
   },
   "type": "module",
-  "main": "src/main.ts",
+  "main": "src/manager/main.ts",
   "scripts": {
-    "start": "npm run build && node --trace-warnings dist/main.js",
+    "start": "npm run build && node --trace-warnings dist/manager/main.js",
     "build": "tsc --project tsconfig.json",
     "test": "npm start"
   },
@@ -25,5 +25,20 @@
   "bugs": {
     "url": "https://gitlab.com/tnet.moe/discord/discord-ws-gateway/issues"
   },
-  "homepage": "https://gitlab.com/tnet.moe/discord/discord-ws-gateway#readme"
+  "homepage": "https://gitlab.com/tnet.moe/discord/discord-ws-gateway#readme",
+  "dependencies": {
+    "@discordjs/rest": "^1.7.1",
+    "@discordjs/ws": "^0.8.3",
+    "bufferutil": "^4.0.7",
+    "bullmq": "^3.12.0",
+    "discord-api-types": "^0.37.41",
+    "pino": "^8.14.1",
+    "pino-pretty": "^10.0.0",
+    "utf-8-validate": "^6.0.3",
+    "zlib-sync": "^0.1.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.4"
+  }
 }

@@ -1,0 +1,37 @@
+services:
+  discord-ws-gateway:
+    container_name: "discord-ws-gateway"
+    hostname: "discord-ws-gateway"
+    environment:
+      #- TOKEN=TOKEN
+      #- REDIS_HOST=redis
+      #- REDIS_PORT=6379
+      #- REDIS_USER=test
+      #- REDIS_PASS=senpaithisisoursecret
+      #- REDIS_DB=0
+      #- QUEUE_NAME=discord
+      #- INTENTS=Guilds,GuildMessages
+    build: .
+    init: true # signal forwarding, prevent orphaned child processes.
+    cap_drop:
+      - "ALL" # remove all permissions from the container.
+    read_only: true # make container read-only to make remote-file execution harder.
+    user: node
+    tmpfs:
+      - "/tmp:exec,uid=999,gid=999"
+    networks:
+      - discord-ws-gateway
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 100m
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00' # 1 = core
+          memory: 1G # 1 1G = 1GB ram
+networks:
+  discord-ws-gateway:
+    driver: bridge
+    name: discord

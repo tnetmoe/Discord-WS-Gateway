@@ -1,0 +1,77 @@
+variables:
+  CS_IMAGE: $CI_REGISTRY_IMAGE:git-$CI_COMMIT_SHORT_SHA
+
+stages:
+  - build
+  - test
+  - publish
+
+.docker_build: &docker_build
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker info
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - export BASE_TAG="git-$CI_COMMIT_SHORT_SHA"
+  script:
+    - docker build . -t $CI_REGISTRY_IMAGE:$BASE_TAG
+    - docker push $CI_REGISTRY_IMAGE:$BASE_TAG
+
+.docker_push: &docker_push
+  image: docker:latest
+  stage: publish
+  needs:
+    - Docker Build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - export BASE_TAG="git-$CI_COMMIT_SHORT_SHA"
+    - export SHORT_TAG="$(echo $CI_COMMIT_TAG | cut -d "." -f1)"
+
+.docker_tag: &docker_tag
+  <<: *docker_push
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$BASE_TAG
+    - docker tag $CI_REGISTRY_IMAGE:$BASE_TAG $CI_REGISTRY_IMAGE:$NEW_TAG
+    - docker tag $CI_REGISTRY_IMAGE:$BASE_TAG $CI_REGISTRY_IMAGE:$SHORT_TAG
+    - docker push $CI_REGISTRY_IMAGE --all-tags
+
+.docker_custom_tag: &docker_custom_tag
+  <<: *docker_push
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$BASE_TAG
+    - docker tag $CI_REGISTRY_IMAGE:$BASE_TAG $CI_REGISTRY_IMAGE:$NEW_TAG
+    - docker push $CI_REGISTRY_IMAGE --all-tags
+
+Docker Build:
+  <<: *docker_build
+
+Push Stable:
+  <<: *docker_custom_tag
+  only:
+    - stable
+  variables:
+    NEW_TAG: stable
+
+Push Mainline:
+  <<: *docker_custom_tag
+  only:
+    - main
+  variables:
+    NEW_TAG: main
+
+Push Tags:
+  <<: *docker_tag
+  only:
+    - tags
+  variables:
+    NEW_TAG: $CI_COMMIT_TAG
+
+include:
+  - template: Jobs/Code-Quality.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
